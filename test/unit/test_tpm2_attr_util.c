@@ -181,9 +181,12 @@ test_nv_attrtostr(0x400000, "<reserved(22)>")  //bit 22 - reserved
 test_nv_attrtostr(0x800000, "<reserved(23)>")  //bit 23- reserved
 test_nv_attrtostr(0x1000000, "<reserved(24)>") //bit 24- reserved
 
-test_nv_attrtostr(0x30, "nt=0x3") //bit 24- reserved
-test_nv_attrtostr(0x40, "nt=0x4") //bit 24- reserved
-test_nv_attrtostr(0x90, "nt=0x9") //bit 24- reserved
+test_nv_attrtostr(0x10, "nt=counter")   // 0x1
+test_nv_attrtostr(0x20, "nt=bits")      // 0x2
+test_nv_attrtostr(0x40, "nt=extend")    // 0x4
+test_nv_attrtostr(0x80, "nt=pinfail")   // 0x8
+test_nv_attrtostr(0x90, "nt=pinpass")   // 0x9
+test_nv_attrtostr(0x30, "nt=0x3")       // unknown NT value -> stays hex
 
 #define NV_ALL_FIELDS \
         "ppwrite|ownerwrite|authwrite|policywrite|nt=0xF|<reserved(8)>"  \
@@ -214,7 +217,7 @@ test_nv_attrtostr_compound(stclear_ppwrite_0x30,
         "ppwrite|nt=0x3|write_stclear")
 test_nv_attrtostr_compound(platformcreate_ownerread_nt_0x90_0x20000,
         TPMA_NV_PLATFORMCREATE | TPMA_NV_AUTHWRITE | 0x90 | 0x200000,
-        "authwrite|nt=0x9|<reserved(21)>|platformcreate")
+        "authwrite|nt=pinpass|<reserved(21)>|platformcreate")
 
 /*
  * TPMA_OBJECT Tests
@@ -410,8 +413,11 @@ int main(int argc, char* argv[]) {
             test_nv_attrtostr_get(0x400000),  //bit 22 - reserved
             test_nv_attrtostr_get(0x800000),  //bit 23- reserved
             test_nv_attrtostr_get(0x1000000), //bit 24- reserved
+            test_nv_attrtostr_get(0x10), //nt=0x1
+            test_nv_attrtostr_get(0x20), //nt=0x2
             test_nv_attrtostr_get(0x30), //nt=0x3
             test_nv_attrtostr_get(0x40), //nt=0x4
+            test_nv_attrtostr_get(0x80), //nt=0x8
             test_nv_attrtostr_get(0x90), //nt=0x9
             test_nv_attrtostr_get(stclear_ppwrite),
             test_nv_attrtostr_get(stclear_ppwrite_0x30),

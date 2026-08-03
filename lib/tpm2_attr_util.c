@@ -200,6 +200,19 @@ static bool lookup_nt_friendly_name(const char *arg, uint16_t *type) {
     return true;
 }
 
+static const char *nt_to_friendly_name(UINT8 value) {
+
+    switch (value) {
+    case TPM2_NT_ORDINARY:  return "ordinary";
+    case TPM2_NT_COUNTER:   return "counter";
+    case TPM2_NT_BITS:      return "bits";
+    case TPM2_NT_EXTEND:    return "extend";
+    case TPM2_NT_PIN_FAIL:  return "pinfail";
+    case TPM2_NT_PIN_PASS:  return "pinpass";
+    default:                return NULL; /* unknown -> caller prints hex */
+    }
+}
+
 static bool nt(TPMA_NV *nv, char *arg) {
 
     uint16_t value = 0;
@@ -617,9 +630,14 @@ static char *tpm2_attr_util_common_attrtostr(UINT32 attrs,
         if (w == 1) {
             n = snprintf(s, left, attrs ? "%s|" : "%s", name);
         } else {
-            /* deal with the field */
-            n = snprintf(s, left, attrs ? "%s=0x%X|" : "%s=0x%X", name,
-                    field_values);
+            const char *fname =
+                !strcmp(name, "nt") ? nt_to_friendly_name(field_values) : NULL;
+            if (fname) {
+                n = snprintf(s, left, attrs ? "%s=%s|" : "%s=%s", name, fname);
+            } else {
+                n = snprintf(s, left, attrs ? "%s=0x%X|" : "%s=0x%X", name,
+                        field_values);
+            }
         }
 
         /* check if there was enough space left in s */
