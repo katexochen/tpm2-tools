@@ -240,9 +240,9 @@ static dispatch_table nv_attr_table[] = { // Bit Index
     dispatch_no_arg_add(authwrite),       //  2
     dispatch_no_arg_add(policywrite),     //  3
     dispatch_arg_add(nt, 4),              //  4
-    dispatch_arg_add(nt, 3),              //  5
-    dispatch_arg_add(nt, 2),              //  6
-    dispatch_arg_add(nt, 1),              //  7
+    dispatch_arg_add(nt, 4),              //  5
+    dispatch_arg_add(nt, 4),              //  6
+    dispatch_arg_add(nt, 4),              //  7
     dispatch_reserved(8),                 //  8
     dispatch_reserved(9),                 //  9
     dispatch_no_arg_add(policydelete),    // 10
@@ -581,6 +581,13 @@ static char *tpm2_attr_util_common_attrtostr(UINT32 attrs,
         const char *name = d->name;
         unsigned w = d->width;
 
+        /*
+         * A multi-bit field is naturally aligned to its width, so its base is
+         * the first set bit rounded down to a multiple of the width. For
+         * single-bit attributes (w == 1) this is just bit_index.
+         */
+        unsigned base = bit_index & ~(w - 1);
+
         /* current position and size left of the string */
         char *s = &str[string_index];
         size_t left = length - string_index;
@@ -589,13 +596,13 @@ static char *tpm2_attr_util_common_attrtostr(UINT32 attrs,
         UINT8 mask = ((UINT32) 1 << w) - 1;
 
         /* get the value in the field before clearing attrs out */
-        UINT8 field_values = (attrs & mask << bit_index) >> bit_index;
+        UINT8 field_values = (attrs & (mask << base)) >> base;
 
         /*
          * turn off the parsed bit(s) index, using width to turn off everything in a
          * field
          */
-        attrs &= ~(mask << bit_index);
+        attrs &= ~(mask << base);
 
         int n;
         /*

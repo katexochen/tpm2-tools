@@ -182,6 +182,7 @@ test_nv_attrtostr(0x800000, "<reserved(23)>")  //bit 23- reserved
 test_nv_attrtostr(0x1000000, "<reserved(24)>") //bit 24- reserved
 
 test_nv_attrtostr(0x30, "nt=0x3") //bit 24- reserved
+test_nv_attrtostr(0x40, "nt=0x4") //bit 24- reserved
 test_nv_attrtostr(0x90, "nt=0x9") //bit 24- reserved
 
 #define NV_ALL_FIELDS \
@@ -410,6 +411,7 @@ int main(int argc, char* argv[]) {
             test_nv_attrtostr_get(0x800000),  //bit 23- reserved
             test_nv_attrtostr_get(0x1000000), //bit 24- reserved
             test_nv_attrtostr_get(0x30), //nt=0x3
+            test_nv_attrtostr_get(0x40), //nt=0x4
             test_nv_attrtostr_get(0x90), //nt=0x9
             test_nv_attrtostr_get(stclear_ppwrite),
             test_nv_attrtostr_get(stclear_ppwrite_0x30),
